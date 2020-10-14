@@ -21,6 +21,7 @@ namespace CaptureC.ViewModels
         private string _versionDescription;
         private ICommand _setThemeCommand;
         private ICommand _privacyStatementCommand;
+        private ICommand _settingsSoundCommand;
 
         public AppTheme Theme
         {
@@ -34,9 +35,11 @@ namespace CaptureC.ViewModels
             set { Set(ref _versionDescription, value); }
         }
 
-        public ICommand SetThemeCommand => _setThemeCommand ?? (_setThemeCommand = new RelayCommand<string>(OnSetTheme));
+        public ICommand SettingsSoundCommand => _settingsSoundCommand ??= new RelayCommand(OnWindowsSettingSound);
 
-        public ICommand PrivacyStatementCommand => _privacyStatementCommand ?? (_privacyStatementCommand = new RelayCommand(OnPrivacyStatement));
+        public ICommand SetThemeCommand => _setThemeCommand ??= new RelayCommand<string>(OnSetTheme);
+
+        public ICommand PrivacyStatementCommand => _privacyStatementCommand ??= new RelayCommand(OnPrivacyStatement);
 
         public SettingsViewModel(IOptions<AppConfig> appConfig, IThemeSelectorService themeSelectorService, ISystemService systemService, IApplicationInfoService applicationInfoService)
         {
@@ -64,5 +67,8 @@ namespace CaptureC.ViewModels
 
         private void OnPrivacyStatement()
             => _systemService.OpenInWebBrowser(_appConfig.PrivacyStatement);
+
+        private async void OnWindowsSettingSound()
+            => await Windows.System.Launcher.LaunchUriAsync(new Uri(@"ms-settings:sound"));
     }
 }
